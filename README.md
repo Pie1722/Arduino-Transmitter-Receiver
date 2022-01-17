@@ -10,3 +10,5 @@ Download the below code if you are using Arduino Nano. For other Arduino Modules
 
 [Remote.zip](https://github.com/HyperArx/Arduino-Transmitter-Receiver/files/7878967/Remote.zip)  
 
+This code may be buggy so if any problem occurs E-Mail me : aravindvallab@outlook.com or aravindvallab@protonmail.com
+
