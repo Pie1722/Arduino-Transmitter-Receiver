@@ -10,7 +10,12 @@ This project is focused on to make a 9 Channel Transmitter And Receiver for RC C
 
 Download the below code if you are using Arduino Nano. For other Arduino Modules, you will have to change teh pin numbers according to your use.
 
-[Remote.zip](https://github.com/HyperArx/Arduino-Transmitter-Receiver/files/7878967/Remote.zip)  
+[Remote.zip](https://github.com/HyperArx/Arduino-Transmitter-Receiver/files/7878967/Remote.zip) 
+
+# Check NRF24L01
+
+[nRF24L01_InspectionCode_-_elekkrypt.zip](https://github.com/HyperArx/Arduino-Transmitter-Receiver/files/7919641/nRF24L01_InspectionCode_-_elekkrypt.zip)
+
 
 This code may be buggy so if any problem occurs E-Mail me : aravindvallab@outlook.com or aravindvallab@protonmail.com
 
