@@ -7,6 +7,16 @@
  #include <Wire.h>
  #include <avr/sleep.h> 
  #include <avr/power.h>
+ #include <Adafruit_GFX.h>
+ #include <Adafruit_SSD1306.h>
+
+ #define SCREEN_WIDTH 128
+ #define SCREEN_HEIGHT 64
+
+ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+ // Define a boolean flag to control the OLED display state
+ bool isDisplayOn = true;
+ #define OLED_RESET # 
 
  // Define the time (in milliseconds) after which the Arduino should go to sleep
  const unsigned long INACTIVITY_TIMEOUT = 600000; // 10 minutes
@@ -41,6 +51,11 @@
  float accAngleX, accAngleY, gyroAngleX, gyroAngleY;   //These variables are used to store calculated angle values based on accelerometer and gyroscope data.
  float angleX, angleY;
  float AccErrorX, AccErrorY, GyroErrorX, GyroErrorY;  //Variables store error values that are calculated during setup to correct for errors in accelerometer and gyroscope readings.
+
+ // Define variables to keep track of button state and count the number of button presses
+ const int buttonPin = 0;    // Define the digital pin for the button
+ bool buttonPressed = false;  // Flag to indicate if the button is pressed
+ bool useIMU = false;         // Flag to indicate whether to use IMU for control
  
  /* ElapsedTime stores the time duration between successive gyro readings. It's of type float and represents time in seconds.
     CurrentTime and previousTime store the current and previous time in milliseconds. They help calculate elapsedTime.
@@ -85,6 +100,16 @@
   void setup() {
 
   Serial.begin(9600);
+
+  if (!display.begin(0x3D)) {
+    Serial.println(F("SSD1306 allocation failed"));
+   // for (;;);
+  }
+  
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
   
   // Initialize interface to the MPU6050
   initialize_MPU6050();
@@ -114,6 +139,8 @@
   //Defines analog pin as input
   pinMode(joystickPinX, INPUT);
   pinMode(joystickPinY, INPUT);
+  // IMU Pin
+  pinMode(buttonPin, INPUT_PULLUP);
 
   tvalue1= EEPROM.read(1) * 4;
   tvalue2= EEPROM.read(3) * 4;
@@ -165,6 +192,8 @@
 
   void loop()
 { 
+
+  display.clearDisplay();
   
   checkJoystickActivity();
   unsigned long currentTime = millis();
@@ -173,7 +202,49 @@
         lastActivityTime = currentTime; // Update last activity time
 
   readTemp();
- 
+
+  // Read trim values from EEPROM
+  int yawTrim = EEPROM.read(1) * 4;
+  int pitchTrim = EEPROM.read(3) * 4;
+  int rollTrim = EEPROM.read(5) * 4;
+
+  // Display trim values on the left side of the OLED display
+  display.setCursor(0, 0);
+  display.print("Yaw: ");
+  display.println(yawTrim);
+  display.print("Pitch: ");
+  display.println(pitchTrim);
+  display.print("Roll: ");
+  display.println(rollTrim);
+  
+  // Read and display values of auxiliary channels on the right side
+  int aux1Value = analogRead(A4);
+  int aux2Value = analogRead(A5);
+  int aux3Value = analogRead(A6);
+  int aux4Value = analogRead(A7);
+
+  display.setCursor(SCREEN_WIDTH / 2, 0); // Move cursor to the right side
+  display.print("Aux1: ");
+  display.println(aux1Value);
+  display.print("Aux2: ");
+  display.println(aux2Value);
+  display.print("Aux3: ");
+  display.println(aux3Value);
+  display.print("Aux4: ");
+  display.println(aux4Value);
+
+  // Read and display values of auxiliary channels as high/low
+  int aux5Value = digitalRead(7);
+  int aux6Value = digitalRead(8);
+
+  display.setCursor(0, SCREEN_HEIGHT - 16); // Move cursor to the bottom left
+  display.print("Aux5: ");
+  display.println(aux5Value == HIGH ? "HIGH" : "LOW");
+
+  display.setCursor(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 16); // Move cursor to the bottom right
+  display.print("Aux6: ");
+  display.println(aux6Value == HIGH ? "HIGH" : "LOW");
+    
 // Trims and Limiting trim values  
 
   if(digitalRead(trimbut_1)==LOW and tvalue1 < 630) {
@@ -227,21 +298,70 @@
   data.aux4 = Border_Map( analogRead(A7), 0, 512, 1023, true );
   data.aux5 = digitalRead(7);
   data.aux6 = digitalRead(8);
-
-  // If D0 is high 
-  if (digitalRead(0) == 1) {
-    read_IMU();    // Use MPU6050 instead of Joystick for controling left, right, forward and backward movements
-  }
   
+   // Read the state of the button
+  int buttonState = digitalRead(buttonPin);
+  static int buttonPressCount = 0; // Track the number of button presses
+
+  // Check if the button is pressed (LOW) and wasn't pressed before
+  if (buttonState == LOW && !buttonPressed) {
+    // Button is pressed for the first time
+    buttonPressed = true;
+    delay(50); // Debounce delay to avoid multiple presses
+
+     // Increment the buttonPressCount
+     buttonPressCount++;
+
+   // Toggle the useIMU flag when the button is pressed once
+  if (buttonPressCount == 1) {
+    useIMU = !useIMU;
+
+    if (useIMU) {
+      // IMU control is enabled, you can read and use IMU data for control
+      read_IMU();
+    } else {
+      // IMU control is disabled, you can stop reading IMU data here
+      // Add any code here to handle stopping IMU reading
+    }
+  } else if (buttonPressCount == 2) {
+    // Button is pressed twice, reset the buttonPressCount
+    buttonPressCount = 0;
+  }
+}
+
+  // Check if the button is released (HIGH)
+  if (buttonState == HIGH) {
+    buttonPressed = false; // Button is released, reset the buttonPressed flag
+  }
+
    radio.write(&data, sizeof(Signal)); 
     
     } else {
         // If joystick is inactive for INACTIVITY_TIMEOUT, enter sleep mode
         if (currentTime - lastActivityTime >= INACTIVITY_TIMEOUT) {
             Serial.println("Going to sleep due to Inactivity");
+            display.clearDisplay();
+            display.println("Going to sleep due to Inactivity");
+            display.display();
+            delay(2000);
+            display.clearDisplay();
+           // Check if the display was on before turning it off
+            if (isDisplayOn) {
+                display.ssd1306_command(SSD1306_DISPLAYOFF);
+                isDisplayOn = false;
+              }
+             digitalWrite(13, LOW); // Turn off the onboard LED
             enterSleepMode();
-        }
-    }
+        }  else {
+              // If the joystick is inactive but not for too long, keep the display on
+              if (!isDisplayOn) {
+                  display.ssd1306_command(SSD1306_DISPLAYON);
+                  isDisplayOn = true;
+                   display.begin(0x3D); // Reinitialize the display if necessary
+                }
+          }
+     }
+      display.display();
 }
 
  void initialize_MPU6050() {
