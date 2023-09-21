@@ -212,7 +212,7 @@
   int pitchTrim = EEPROM.read(3) * 4;
   int rollTrim = EEPROM.read(5) * 4;
 
- /* // Display trim values on the left side of the OLED display
+  // Display trim values on the left side of the OLED display
   display.setCursor(0, 0);
   display.print("Yaw: ");
   display.println(yawTrim);
@@ -248,7 +248,7 @@
   display.setCursor(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 16); // Move cursor to the bottom right
   display.print("Aux6: ");
   display.println(aux6Value == HIGH ? "HIGH" : "LOW");
- */ 
+  
  // Check and handle trim buttons
   handleTrimButton(trimbut_1, tvalue1, 630, 280, 1);
   handleTrimButton(trimbut_2, tvalue1, 280, 630, 1);
