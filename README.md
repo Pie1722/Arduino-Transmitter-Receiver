@@ -1,6 +1,7 @@
 # Arduino-Transmitter-Receiver
 
 This project is to make a transmitter and receiver just like commercial transmitter and receiver.
+Use transmitter_with_trim as it has more functions. I'm using Arduino Pro Mini therefore there is a limitation in pins so to use SDA communications , comment A4 % A5 to use SDA communication and vice versa to use Analog pins. 
 
 # Receiver 3D IMAGE 
 
