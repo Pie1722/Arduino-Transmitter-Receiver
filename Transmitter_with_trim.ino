@@ -23,6 +23,10 @@
 
  unsigned long lastActivityTime = 0; // Variable to store the time of the last joystick activity
 
+ // Millis for updating eeprom values
+ unsigned long lastButtonPressTime = 0;
+ unsigned long buttonPressInterval = 10; // Adjust this interval as needed (in milliseconds)
+
  // communication pipe is defined for the NRF24L01 module. The radio object is created to interact with the NRF24L01 module using the pins 9 (CE) and 10 (CSN).
  const uint64_t pipeOut = 000322;        // NOTE: The same as in the receiver 000322  
  RF24 radio(9, 10);                      // nRF24L01 (CE, CSN)
@@ -208,7 +212,7 @@
   int pitchTrim = EEPROM.read(3) * 4;
   int rollTrim = EEPROM.read(5) * 4;
 
-  // Display trim values on the left side of the OLED display
+ // Display trim values on the left side of the OLED display
   display.setCursor(0, 0);
   display.print("Yaw: ");
   display.println(yawTrim);
@@ -245,46 +249,14 @@
   display.print("Aux6: ");
   display.println(aux6Value == HIGH ? "HIGH" : "LOW");
     
-// Trims and Limiting trim values  
+ // Check and handle trim buttons
+  handleTrimButton(trimbut_1, tvalue1, 630, 280, 1);
+  handleTrimButton(trimbut_2, tvalue1, 280, 630, 1);
+  handleTrimButton(trimbut_3, tvalue2, 630, 280, 3);
+  handleTrimButton(trimbut_4, tvalue2, 280, 630, 3);
+  handleTrimButton(trimbut_5, tvalue3, 630, 280, 5);
+  handleTrimButton(trimbut_6, tvalue3, 280, 630, 5);
 
-  if(digitalRead(trimbut_1)==LOW and tvalue1 < 630) {
-    tvalue1=tvalue1+15;
-    EEPROM.write(1,tvalue1/4); 
-    delay (10);
-
-  }   
-  
-  if(digitalRead(trimbut_2)==LOW and tvalue1 > 280){
-    tvalue1=tvalue1-15;
-    EEPROM.write(1,tvalue1/4);
-    delay (10);
-  } 
-  
-  if(digitalRead(trimbut_3)==LOW and tvalue2 < 630) {
-    tvalue2=tvalue2+15;
-    EEPROM.write(3,tvalue2/4);
-    delay (10);
-  } 
-    
-  if(digitalRead(trimbut_4)==LOW and tvalue2 > 280){
-    tvalue2=tvalue2-15;
-    EEPROM.write(3,tvalue2/4);
-    delay (10);
-  } 
-  
-  if(digitalRead(trimbut_5)==LOW and tvalue3 < 630) {
-     tvalue3=tvalue3+15;
-     EEPROM.write(5,tvalue3/4);
-     delay (10);
-  }  
-   
-  if(digitalRead(trimbut_6)==LOW and tvalue3 > 280){
-    tvalue3=tvalue3-15;
-    EEPROM.write(5,tvalue3/4);
-    delay (10);
-  }
-
-  
 // Control Stick Calibration for channels  
 
   data.roll = Border_Map( analogRead(A3), 0, tvalue1, 1023, true );      // "true" or "false" for signal direction | Alieron
@@ -363,6 +335,26 @@
      }
       display.display();
 }
+
+ void handleTrimButton(int trimButton, int &tvalue, int lowerLimit, int upperLimit, int eepromAddress) {
+   int trimbuttonState = digitalRead(trimButton);
+   unsigned long currentTime = millis();
+
+   if (trimbuttonState == LOW) {
+     // Button is pressed
+     if (currentTime - lastButtonPressTime >= buttonPressInterval) {
+       // Sufficient time has passed since the last button press
+       if (tvalue < upperLimit) {
+         tvalue += 15;
+          EEPROM.write(eepromAddress, tvalue / 4);
+       } else if (tvalue > lowerLimit) {
+         tvalue -= 15;
+         EEPROM.write(eepromAddress, tvalue / 4);
+       }
+       lastButtonPressTime = currentTime;
+     }
+   }
+ }
 
  void initialize_MPU6050() {
   Wire.begin();                      // Initialize comunication
