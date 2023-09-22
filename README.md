@@ -1,7 +1,50 @@
 # Arduino-Transmitter-Receiver
 
 This project is to make a transmitter and receiver just like commercial transmitter and receiver.
-Use transmitter_with_trim as it has more functions. I'm using Arduino Pro Mini therefore there is a limitation in pins so to use SDA communications , comment A4 % A5 to use SDA communication and vice versa to use Analog pins. 
+Use transmitter_with_trim as it has more functions. I'm using Arduino Pro Mini therefore there is a limitation in pins so to use SDA communications , comment A4 & A5 to use SDA communication and vice versa to use Analog pins. 
+
+# Features
+
+1. Libraries: The program uses various libraries, including SPI, nRF24L01, RF24, EEPROM, Wire (for I2C communication), Adafruit_GFX, and Adafruit_SSD1306 (for controlling an OLED 
+   display).
+
+2. OLED Display: The code initializes and uses an OLED display (128x64 pixels) to provide information and user feedback. It can display trim values, auxiliary channel values, and system 
+   status.
+
+3. Joystick Input: The program reads analog joystick values (X and Y axes) using two analog pins (A0 and A1). It uses a threshold (joystickThreshold) to detect joystick activity.
+
+4. Trim Adjustment: The code defines six trim buttons (trimbut_1 to trimbut_6) and handles their presses to adjust trim values. Trim values are stored in EEPROM memory and are read 
+   during setup.
+
+5. IMU Control: The program interfaces with an MPU6050 IMU sensor to obtain accelerometer and gyroscope data. It calculates angle values (pitch and roll) using a complementary filter 
+   and maps these angles to control signals. IMU control can be enabled or disabled using a button press.
+
+6. Radio Communication: It sets up and uses an nRF24L01 radio module for wireless communication. It defines a structure (Signal) to represent control signals and sends these signals 
+   wirelessly.
+
+7. Sleep Mode: When the joystick is inactive for a specified time (INACTIVITY_TIMEOUT), the program enters a low-power sleep mode to conserve energy. It also turns off the OLED display 
+   and onboard LED in sleep mode.
+
+8. Temperature Monitoring: The program reads the temperature from the MPU6050 sensor and can enter sleep mode if the temperature exceeds a certain threshold.
+
+9. EEPROM Usage: Trim values are read from and written to EEPROM memory to persistently store user adjustments.
+
+10. Error Calibration: During setup, the program calculates error values for both the accelerometer and gyroscope readings to compensate for sensor imperfections.
+
+11. Border Mapping: The Border_Map function maps input values to specific ranges, allowing for control signal adjustments based on joystick and IMU readings.
+
+12. Button Handling: It handles button presses for enabling/disabling IMU control and adjusting trim values. It includes debouncing to prevent multiple button presses.
+
+13. Main Loop: The main loop continuously reads the joystick, updates trim values, handles button presses, calculates and sends control signals, manages the OLED display, and enters s 
+    leep mode when inactive.
+
+14. Display Control: The program controls the OLED display to show various information, including trim values, auxiliary channel values, and system status.
+
+15. Initialization: Setup initializes various components, including the OLED display, radio module, GPIO pins, and the MPU6050 sensor.
+
+16. ResetData: A function to reset control signals to default values if the connection is lost.
+
+17. Updating Arduino Pro Mini Firmware Using ESP01 with OTA ( Comming Soon! )
 
 # Receiver 3D IMAGE 
 
