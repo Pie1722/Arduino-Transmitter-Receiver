@@ -203,8 +203,33 @@
   unsigned long currentTime = millis();
 
   if (joystickActive) {
-        lastActivityTime = currentTime; // Update last activity time
-
+        lastActivityTime = currentTime; // Update last activity time 
+    } else {
+        // If joystick is inactive for INACTIVITY_TIMEOUT, enter sleep mode
+        if (currentTime - lastActivityTime >= INACTIVITY_TIMEOUT) {
+            Serial.println("Going to sleep due to Inactivity");
+            display.clearDisplay();
+            display.println("Going to sleep due to Inactivity");
+            display.display();
+            delay(2000);
+            display.clearDisplay();
+           // Check if the display was on before turning it off
+            if (isDisplayOn) {
+                display.ssd1306_command(SSD1306_DISPLAYOFF);
+                isDisplayOn = false;
+              }
+             digitalWrite(13, LOW); // Turn off the onboard LED
+            enterSleepMode();
+        }  else {
+              // If the joystick is inactive but not for too long, keep the display on
+              if (!isDisplayOn) {
+                  display.ssd1306_command(SSD1306_DISPLAYON);
+                  isDisplayOn = true;
+                   display.begin(0x3D); // Reinitialize the display if necessary
+                }
+            }
+     }
+     
   readTemp();
 
   // Read trim values from EEPROM
@@ -248,7 +273,7 @@
   display.setCursor(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 16); // Move cursor to the bottom right
   display.print("Aux6: ");
   display.println(aux6Value == HIGH ? "HIGH" : "LOW");
-  
+ 
  // Check and handle trim buttons
   handleTrimButton(trimbut_1, tvalue1, 630, 280, 1);
   handleTrimButton(trimbut_2, tvalue1, 280, 630, 1);
@@ -307,33 +332,8 @@
   }
 
    radio.write(&data, sizeof(Signal)); 
-    
-    } else {
-        // If joystick is inactive for INACTIVITY_TIMEOUT, enter sleep mode
-        if (currentTime - lastActivityTime >= INACTIVITY_TIMEOUT) {
-            Serial.println("Going to sleep due to Inactivity");
-            display.clearDisplay();
-            display.println("Going to sleep due to Inactivity");
-            display.display();
-            delay(2000);
-            display.clearDisplay();
-           // Check if the display was on before turning it off
-            if (isDisplayOn) {
-                display.ssd1306_command(SSD1306_DISPLAYOFF);
-                isDisplayOn = false;
-              }
-             digitalWrite(13, LOW); // Turn off the onboard LED
-            enterSleepMode();
-        }  else {
-              // If the joystick is inactive but not for too long, keep the display on
-              if (!isDisplayOn) {
-                  display.ssd1306_command(SSD1306_DISPLAYON);
-                  isDisplayOn = true;
-                   display.begin(0x3D); // Reinitialize the display if necessary
-                }
-          }
-     }
-      display.display();
+   
+   display.display();
 }
 
  void handleTrimButton(int trimButton, int &tvalue, int lowerLimit, int upperLimit, int eepromAddress) {
@@ -471,7 +471,6 @@ void read_IMU() {
 }
 
 void readTemp()  {
-
   Wire.beginTransmission(MPU);
   Wire.write(0x41);  // Temp register address
   Wire.endTransmission(false);
@@ -489,5 +488,4 @@ void readTemp()  {
   Serial.println("Entering sleep mode.");
   enterSleepMode();
   }
-
 }
