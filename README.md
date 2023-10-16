@@ -3,6 +3,8 @@
 This project is to make a transmitter and receiver just like commercial transmitter and receiver.
 Use transmitter_with_trim as it has more functions. I'm using Arduino Pro Mini therefore there is a limitation in pins so to use SDA communications , comment A4 & A5 to use SDA communication and vice versa to use Analog pins. 
 
+DOWNLOAD CODE - https://github.com/Pie1722/Arduino-Transmitter-Receiver/blob/main/Transmitter_with_trim.ino
+
 # Features
 
 1. Libraries: The program uses various libraries, including SPI, nRF24L01, RF24, EEPROM, Wire (for I2C communication), Adafruit_GFX, and Adafruit_SSD1306 (for controlling an OLED 
