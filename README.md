@@ -61,8 +61,8 @@ DOWNLOAD CODE - https://github.com/Pie1722/Arduino-Transmitter-Receiver/blob/mai
 ![Screenshot 2023-11-29 144048](https://github.com/Pie1722/Arduino-Transmitter-Receiver/assets/86643678/67515aae-b524-4ce9-8beb-a0c335a004ae)
 ![Screenshot 2023-11-29 144144](https://github.com/Pie1722/Arduino-Transmitter-Receiver/assets/86643678/6ef1c2b3-3120-42b9-bcf1-dc3b32e28bc3)
 
-![Screenshot 2023-11-29 144231](https://github.com/Pie1722/Arduino-Transmitter-Receiver/assets/86643678/a9c0915c-f6da-4f2d-988e-a53087edec23)
 ![Screenshot 2023-11-29 144206](https://github.com/Pie1722/Arduino-Transmitter-Receiver/assets/86643678/7d902b70-8d9b-4a57-b5a7-59573701b5e9)
+![Screenshot 2023-11-29 144231](https://github.com/Pie1722/Arduino-Transmitter-Receiver/assets/86643678/a9c0915c-f6da-4f2d-988e-a53087edec23)
 
 # Radio Controller For R.C Car
 
