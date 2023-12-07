@@ -66,7 +66,7 @@ DOWNLOAD CODE - https://github.com/Pie1722/Arduino-Transmitter-Receiver/blob/mai
 
 # Radio Controller For R.C Car
 
-Download the below code if you are using Arduino Nano. For other Arduino Modules, you will have to change teh pin numbers according to your use.
+Download the below code and customize the code to suit your purpse :)
 
 [Remote.zip](https://github.com/HyperArx/Arduino-Transmitter-Receiver/files/7878967/Remote.zip) 
 
