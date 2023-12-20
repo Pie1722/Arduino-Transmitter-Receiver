@@ -105,7 +105,7 @@
 
   Serial.begin(9600);
 
-/*  if (!display.begin(0x3D)) {
+  if (!display.begin(0x3D)) {
     Serial.println(F("SSD1306 allocation failed"));
    // for (;;);
   }
@@ -114,7 +114,7 @@
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
- */ 
+ 
   // Initialize interface to the MPU6050
   initialize_MPU6050();
 
