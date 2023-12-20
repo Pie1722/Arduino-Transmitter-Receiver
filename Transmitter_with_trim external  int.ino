@@ -32,11 +32,10 @@
  const uint64_t pipeOut = 000322;        // NOTE: The same as in the receiver 000322  
  RF24 radio(9, 10);                      // nRF24L01 (CE, CSN)
 
-/*Defines the analog pins for reading joystick X and Y axis values. joystickThreshold sets the minimum change required to consider the joystick as active. 
+/*Defines the analog pins for reading joystick X and Y axis values.
   tempRaw stores the raw temperature reading from a sensor, and joystickActive keeps track of whether the joystick is actively being used. */
  const int joystickPinX = A0;    // Joystick X-axis pin
  const int joystickPinY = A1;    // Joystick Y-axis pin
- const int joystickThreshold = 50; // Minimum change required to wake up
 
  int16_t tempRaw;               //16 bit integer used to store raw temp data from MPU6050
  //boolean (true/false) value.
@@ -106,7 +105,7 @@
 
   Serial.begin(9600);
 
-  if (!display.begin(0x3D)) {
+/*  if (!display.begin(0x3D)) {
     Serial.println(F("SSD1306 allocation failed"));
    // for (;;);
   }
@@ -115,7 +114,7 @@
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
-  
+ */ 
   // Initialize interface to the MPU6050
   initialize_MPU6050();
 
@@ -166,16 +165,19 @@
   detachInterrupt(digitalPinToInterrupt(externalButtonPin)); // Detach interrupt
 }
 
- void checkJoystickActivity() {                //analogRead reads values from 0 to 1023
-   int joystickX = analogRead(joystickPinX);   //Represents X-Axis of Joystick
-   int joystickY = analogRead(joystickPinY);   //Represents Y-Axis of Joystick
+void checkJoystickActivity() {
+   int joystickX = analogRead(joystickPinX);   // Represents X-Axis of Joystick
+   int joystickY = analogRead(joystickPinY);   // Represents Y-Axis of Joystick
 
-//This condition compares the absolute difference between the current joystick analog value and the center value (512, which represents the neutral position) with the joystickThreshold.
-     if (abs(joystickX - 512) > joystickThreshold || abs(joystickY - 512) > joystickThreshold) {  
-       joystickActive = true;  // If the condition meets them the Joystick is ACTIVE or else it's NOT ACTIVE
-      } else {
-         joystickActive = false;
-        }
+   // Define a threshold to account for errors or fluctuations
+   int joystickThreshold = 10;
+
+   // This condition checks if either the X-axis or the Y-axis deviates from the center position (512) by more than the threshold
+   if (abs(joystickX - 512) > joystickThreshold || abs(joystickY - 512) > joystickThreshold) {
+       joystickActive = true;  // If the condition is met, the Joystick is ACTIVE
+   } else {
+       joystickActive = false; // If not, it's NOT ACTIVE
+   }
 }
 
 /* Border_Map that takes five integer arguments:
@@ -322,6 +324,7 @@
     if (useIMU) {
       // IMU control is enabled, you can read and use IMU data for control
       read_IMU();
+      Serial.print("IMU");
     } else {
       // IMU control is disabled, you can stop reading IMU data here
       // Add any code here to handle stopping IMU reading
