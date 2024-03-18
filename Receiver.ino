@@ -88,20 +88,7 @@ void loop() {
     digitalWrite(in4, HIGH);
   }
   
-// steering used for left and right control
-  if (steering < 110) {
-    digitalWrite(in1, HIGH);
-    digitalWrite(in2, LOW);
-  }
-  if (steering > 140) {
-    digitalWrite(in1, LOW);
-    digitalWrite(in2, HIGH);
-  }
-  // If joystick stays in middle the motors are not moving
-  else {
-    digitalWrite(in1, HIGH);
-    digitalWrite(in2, HIGH);
-  }
+// steering servo
 }
 void resetData() {
   // Reset the values when there is no radio connection - Set initial default values
