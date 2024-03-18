@@ -56,11 +56,12 @@ void loop() {
   // Check whether we keep receving data, or we have a connection between the two modules
   currentTime = millis();
   if ( currentTime - lastReceiveTime > 1000 ) { // If current time is more then 1 second since we have recived the last data, that means we have lost connection
+    Serial.println("Signal is Lost");
     resetData(); // If connection is lost, reset the data. It prevents unwanted behavior, for example if a drone jas a throttle up, if we lose connection it can keep flying away if we dont reset the function
   }
   // Check whether there is data to be received
   if (radio.available()) {
-    radio.read(&data, sizeof(Data_Package)); // Read the whole data and store it into the 'data' structure
+    radio.read(&data, sizeof(Signal)); // Read the whole data and store it into the 'data' structure
     lastReceiveTime = millis(); // At this moment we have received the data
   }
   // Parse the data from the Joystic 1 to the steering and throttle variables
