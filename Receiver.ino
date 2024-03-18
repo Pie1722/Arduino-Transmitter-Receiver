@@ -1,5 +1,5 @@
 /* By
- * HYPERARX
+ * Pie_1722
  * aravindvallab@protonmail.com
  * Arduino Pro Mini Receiver (RC CAR) 
 */
@@ -18,23 +18,20 @@ unsigned long lastReceiveTime = 0;
 unsigned long currentTime = 0;
 
 // Max size of this struct is 32 bytes
-struct Data_Package {
-  byte j1PotX;
-  byte j1PotY;
-  byte j1Button;
-  byte j2PotX;
-  byte j2PotY;
-  byte j2Button;
-  byte pot1;
-  byte pot2;
-  byte tSwitch1;
-  byte tSwitch2;
-  byte button1;
-  byte button2;
-  byte tSwitch3;
-  byte tSwitch4;
+struct Signal {
+  byte throttle;
+  byte pitch;
+  byte roll;
+  byte yaw;
+  byte aux1;
+  byte aux2;
+  byte aux3;
+  byte aux4;
+  byte aux5;
+  byte aux6 ; 
 };
-Data_Package data; //Create a variable with the above structure
+Signal data; //Create a variable with the above structure
+
 int  steering, throttle;
 int motorSpeedA = 0;
 int motorSpeedB = 0;
@@ -67,8 +64,8 @@ void loop() {
     lastReceiveTime = millis(); // At this moment we have received the data
   }
   // Parse the data from the Joystic 1 to the steering and throttle variables
-  steering = data.j2PotX;
-  throttle = data.j1PotY;
+  steering = data.roll;
+  throttle = data.throttle;
 // Throttle used for forward and backward control
   if (throttle < 110) {
     // Convert the declining throttle readings for going backward from 110 to 0 into 0 to 255 value for the PWM signal for increasing the motor speed
@@ -107,18 +104,14 @@ void loop() {
 }
 void resetData() {
   // Reset the values when there is no radio connection - Set initial default values
-  data.j1PotX = 127.5;
-  data.j1PotY = 127.5;
-  data.j2PotX = 127.5;
-  data.j2PotY = 127.5;
-  data.j1Button = 1;
-  data.j2Button = 1;
-  data.pot1 = 1;
-  data.pot2 = 1;
-  data.tSwitch1 = 1;
-  data.tSwitch2 = 1;
-  data.button1 = 1;
-  data.button2 = 1;
-  data.tSwitch3 = 1;
-  data.tSwitch4 = 1;
+  data.yaw = 127.5;
+  data.throttle = 127.5;
+  data.roll = 127.5;
+  data.pitch = 127.5;
+  data.aux1 = 0;                                              // Define the inicial value of each data input. 
+  data.aux2 = 0;
+  data.aux3 = 0;
+  data.aux4 = 0;
+  data.aux5 = 0;
+  data.aux6 = 0;
 }
